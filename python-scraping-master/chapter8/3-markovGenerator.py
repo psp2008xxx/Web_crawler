@@ -1,4 +1,5 @@
-from urllib.request import urlopen
+# from urllib.request import urlopen
+import urllib
 from random import randint
 
 def wordListSum(wordList):
@@ -38,10 +39,11 @@ def buildWordDict(text):
         if words[i] not in wordDict[words[i-1]]:
             wordDict[words[i-1]][words[i]] = 0
         wordDict[words[i-1]][words[i]] += 1
-
+    print wordDict
     return wordDict
 
-text = str(urlopen("http://pythonscraping.com/files/inaugurationSpeech.txt").read(), 'utf-8')
+# text = str(urllib.urlopen("http://pythonscraping.com/files/inaugurationSpeech.txt").read(), 'utf-8')
+text = urllib.urlopen("http://pythonscraping.com/files/inaugurationSpeech.txt").read().decode('utf-8')
 wordDict = buildWordDict(text)
 
 #Generate a Markov chain of length 100
@@ -50,10 +52,11 @@ chain = ""
 currentWord = "I"
 for i in range(0, length):
     chain += currentWord+" "
-    #print(wordDict[currentWord])
+    # print(wordDict[currentWord])
     currentWord = retrieveRandomWord(wordDict[currentWord])
 
 print(chain)
+
 
 
 

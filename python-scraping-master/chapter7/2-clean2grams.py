@@ -30,7 +30,7 @@ def getNgrams(input, n):
             output[newNGram] = 1
     return output
 
-html = urllib.urlopen("http://en.wikipedia.org/wiki/Python_(programming_language)")
+html = urllib.urlopen("https://en.wikipedia.org/wiki/Python_(programming_language)")
 bsObj = BeautifulSoup(html)
 content = bsObj.find("div", {"id":"mw-content-text"}).get_text()
 #ngrams = getNgrams(content, 2)
