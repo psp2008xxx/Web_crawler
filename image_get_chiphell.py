@@ -3,6 +3,8 @@ import re
 import os
 import requests
 from bs4 import BeautifulSoup
+import shutil
+import time
 
 
 hdr = {
@@ -14,39 +16,21 @@ hdr = {
     'Connection': 'keep-alive'}
 
 
-def get_sublinks(url):
+def download_image(url):
     session = requests.session()
     source_content = session.get(url, headers=hdr)
     bs4Obj = BeautifulSoup(source_content.content, 'html.parser')
-    image_links = bs4Obj.find_all("a", href=re.compile("^forum.*yes$"))
-    # return image_links
+    image_links = bs4Obj.find_all("a", {"href":re.compile("^forum.*nothumb=yes$"), "class":"xw1"})
     for link in image_links:
-        page_url = "https://www.chiphell.com/" + link.attrs["href"]
-        req2 = session.get(page_url, headers=hdr)
-        html_content2 = urllib2.urlopen(req2)
-        file_name = os.path.join(r"D:\download_image", link.attrs["src"].split("/")[-1])
+        time.sleep(2)
+        page_url = "https://www.chiphell.com/" + link.attrs["href"].replace('&amp;','&')
+        page_content = session.get(page_url, headers=hdr, stream=True)
+        file_name = os.path.join(r"D:\download_image", link.get_text())
         with open(file_name, "wb") as f:
-            f.write(html_content2.read())
-            html_content2.close()
-
-def get_sublinks_2(url):
-    session = requests.session()
-    page_url = "https://www.chiphell.com/" + url
-    source_content = session.get(page_url, headers=hdr)
-    print source_content.text
+            page_content.raw.decode_content = True
+            shutil.copyfileobj(page_content.raw, f)
 
 
 
 
-def download_image(image_links):
-    for link in image_links:
-        req2 = urllib2.Request(link.attrs["href"], headers=hdr)
-        html_content2 = urllib2.urlopen(req2)
-        file_name = os.path.join(r"D:\download_image", link.attrs["src"].split("/")[-1])
-        with open(file_name, "wb") as f:
-            f.write(html_content2.read())
-            html_content2.close()
-
-
-get_sublinks_2("forum.php?mod=attachment&amp;aid=NjM2MDAxOXwwNjIzOGExNHwxNDcxOTQzODM2fDB8MTYzMDgwNg%3D%3D&amp;nothumb=yes")
-# download_image(image_links)
+download_image("https://www.chiphell.com/thread-1630806-1-1.html")
